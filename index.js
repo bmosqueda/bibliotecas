@@ -1,16 +1,19 @@
-//http://siabuc.ucol.mx:3001/api/fichas/busqueda?searchString=afsasdf
-const express = require('express');
-const path = require('path');
- 
+//"start": "react-scripts start",
+import React from 'react'  
+import { renderToString } from 'react-dom/server'
+import express from 'express'
 const app = express();
+const PORT = process.env.PORT || 3000;
 
-app.get('/prueba', (req, res) => {
-  res.sendFile(path.join(__dirname, '/src/'));
-  console.log('En prueba');
-});
+// Traemos el componente
+import Component from './src/libros.js'  
+// Lo pasamos a string
+const App = renderToString(<Component />)
+
+// Lo enviamos al entrar en la ruta, es decir el HTML compilado
+app.get('/libro', (req, res) => {  
+  res.send(App);
+})
 
 app.use(express.static(path.join(__dirname,'/public')));
-app.use(express.static(path.join(__dirname,'/views')));
-app.use(express.static(path.join(__dirname,'/node_modules/axios/dist')));
-
-app.listen(3000);
+app.listen(PORT, () => console.log(`Listening on ${ PORT }`));
