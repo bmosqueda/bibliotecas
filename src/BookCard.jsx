@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-class Card extends Component { 
+class BookCard extends Component { 
   showPreview(isbn) {
     console.log("isbn: ", isbn)
   }
@@ -34,4 +34,4 @@ class Card extends Component {
   }
 }
 
-export default Card;
+export default BookCard;

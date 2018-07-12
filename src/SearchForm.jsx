@@ -1,75 +1,66 @@
 import React, { Component } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
-import Card from './card.jsx';
+import BookCard from './BookCard.jsx';
 
-class Libro extends Component {
+class SearchForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
       libros: [],
       buttons: [],
-      titulo: 'Javascript',
+      titulo: '',
       editorial: '',
       autor: '',
       fecha: '',
-      busqueda: '',
+      search: '',
       limit: 9,
       currentPage: 0,
-      resultados: 0,
-      pagesNumber: 1,
-      lastPage: 0
+      results: 0,
+      pagesNumber: 1
     }
   }
 
-  updateInputTitulo(evt) {this.setState({ titulo: evt.target.value });}
+  updateInputTitulo(ev) {this.setState({ titulo: ev.target.value });}
 
-  updateInputAutor(evt) {this.setState({ autor: evt.target.value });}
+  updateInputAutor(ev) {this.setState({ autor: ev.target.value });}
 
   updateInputEditorial(ev) {this.setState({ editorial: ev.target.value });}
 
-  updateInputFecha(evt) {this.setState({ fecha: evt.target.value });}
+  updateInputFecha(ev) {this.setState({ fecha: ev.target.value });}
 
   getLibros() {
-    console.log(this.state.titulo);
-    console.log(this.state.autor);
-    console.log(this.state.editorial);
-    let parametros = {
+    let paramethers = {
       titulo: this.state.titulo,
-      autor: this.state.autor,
       editorial: this.state.editorial,
+      autor: this.state.autor,
       fecha: this.state.fecha
-    }
+    };
     let empty = true;
-    let busqueda = '[]?';
+    let search = '[]?';
     const params = ['titulo', 'autor', 'editorial', 'fecha'];
 
     params.forEach(param => {
-      if(parametros[param] !== '') {
-        busqueda += `${param}=${parametros[param]}&`;
+      if(paramethers[param] !== '') {
+        search += `${param}=${paramethers[param]}&`;
         empty = false;
       }
     }); 
 
-    console.log(parametros);
-    console.log(busqueda);
-
     if(!empty) {
-      this.setState({busqueda: busqueda});
+      this.setState({search: search});
       // params
       //[]? titulo, autor, editorial, count, limit
-      axios.get(`http://siabuc.ucol.mx:3001/api/fichas/busqueda/${busqueda}&count`)
+      //Esta consulta sólo pide el número de libros en esta búsqueda
+      axios.get(`http://siabuc.ucol.mx:3001/api/fichas/busqueda/${search}&count`)
         .then(res => {
-          this.setState({resultados: res.data[0].titulos});
-          console.log('res.data[0].titulos ', res.data[0].titulos);
-          console.log('this.state.limit ',this.state.limit);
+          this.setState({results: res.data[0].titulos});
           this.setState({pagesNumber: res.data[0].titulos / this.state.limit});
-          console.log('this.state.pagesNumber', this.state.pagesNumber);
+
           let botones = []
-          for (var i = 0; i < this.state.pagesNumber; i++) {
+          for (var i = 0; i < this.state.pagesNumber; i++) 
             botones.push(i);
-          }
-          console.log('botones: ', botones);
+
           this.setState({buttons: botones});
           this.setState({currentPage: 0});
           this.getLibrosPerPage(0);
@@ -83,7 +74,7 @@ class Libro extends Component {
   getLibrosPerPage(after) {
     this.setState({currentPage: after});
     after *= this.state.limit;
-    axios.get(`http://siabuc.ucol.mx:3001/api/fichas/busqueda/${this.state.busqueda}&after=${after}&limit=${this.state.limit}`)
+    axios.get(`http://siabuc.ucol.mx:3001/api/fichas/busqueda/${this.state.search}&after=${after}&limit=${this.state.limit}`)
       .then(res => {
         res.data.pop(); 
         const libros = res.data;  
@@ -105,7 +96,7 @@ class Libro extends Component {
   toNextPage() {
     let current = this.state.currentPage;
     if(current < this.state.pagesNumber - 1) {
-      current++;
+      current++; 
       this.setState({currentPage: current});
       this.getLibrosPerPage(current);
     }
@@ -121,8 +112,10 @@ class Libro extends Component {
     return (
       <div>
 
-          <nav class="navbar navbar-dark bg-dark text-center">
-            <h1 className="text-white">Búsquedas SIABUC</h1>
+          <nav className="navbar navbar-dark bg-dark">
+            <center>
+              <h1 className="text-white">Búsquedas SIABUC</h1>
+            </center>
           </nav>
         <div className="container">
           <div className="row">
@@ -135,8 +128,8 @@ class Libro extends Component {
                   placeholder="Título" 
                   className="form-control" 
                   value={this.state.titulo} 
-                  onChange={evt => this.updateInputTitulo(evt)} 
-                  onKeyDown={evt => this.keyPress(evt)}
+                  onChange={ev => this.updateInputTitulo(ev)} 
+                  onKeyDown={ev => this.keyPress(ev)}
                 />
               </div>
               <div className="form-group">
@@ -146,8 +139,8 @@ class Libro extends Component {
                   placeholder="Autor" 
                   className="form-control" 
                   value={this.state.autor} 
-                  onChange={evt => this.updateInputAutor(evt)} 
-                  onKeyDown={evt => this.keyPress(evt)}
+                  onChange={ev => this.updateInputAutor(ev)} 
+                  onKeyDown={ev => this.keyPress(ev)}
                 />
               </div>
               <div className="form-group">
@@ -157,8 +150,8 @@ class Libro extends Component {
                   placeholder="Editorial" 
                   className="form-control" 
                   value={this.state.editorial} 
-                  onChange={evt => this.updateInputEditorial(evt)} 
-                  onKeyDown={evt => this.keyPress(evt)}
+                  onChange={ev => this.updateInputEditorial(ev)} 
+                  onKeyDown={ev => this.keyPress(ev)}
                 />
               </div>
               <div className="form-group">
@@ -169,8 +162,8 @@ class Libro extends Component {
                   type="number"
                   max="2030"
                   min="1950"
-                  onChange={evt => this.updateInputFecha(evt)} 
-                  onKeyDown={evt => this.keyPress(evt)}
+                  onChange={ev => this.updateInputFecha(ev)} 
+                  onKeyDown={ev => this.keyPress(ev)}
                 />
               </div>
               <div className="form-group">
@@ -183,11 +176,11 @@ class Libro extends Component {
               </div>
             </div>  
           </div>
-          <span>Resultados: {this.state.resultados}</span>
+          <span>results: {this.state.results}</span>
           <br/>
           <div className="row">
             { this.state.libros.map(libro => 
-                <Card 
+                <BookCard 
                   titulo={libro.titulo} 
                   autor={libro.autor} 
                   libro={libro.isbn} 
@@ -238,4 +231,4 @@ class Libro extends Component {
   }
 }
 
-export default Libro;
+export default SearchForm;
