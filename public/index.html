@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8">
+    <meta http-equiv="content-type" content="text/html"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="theme-color" content="#000000">
     <!--
@@ -26,6 +27,24 @@
       You need to enable JavaScript to run this app.
     </noscript>
     <div id="root"></div>
+
+    <script type="text/javascript" src="//www.google.com/books/jsapi.js"></script>
+    <script type="text/javascript">
+      google.books.load();
+      let viewer;
+
+      function initialize() {
+        viewer = new google.books.DefaultViewer(document.getElementById('viewerCanvas'));
+        viewer.load('ISBN:0738531367');
+      }
+
+      google.books.setOnLoadCallback(initialize);
+    </script>
+    <div class="row">
+      <div class="col-8 offset-3">
+        <div id="viewerCanvas" style="width: 600px; height: 500px;"></div>
+      </div>
+    </div>
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.
